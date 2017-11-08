@@ -1,0 +1,7 @@
+emplacements:
+    type:     rest
+    resource: "@AppBundle/Controller/Rest/EmplacementsController.php"
+
+users:
+    type:     rest
+    resource: "@AppBundle/Controller/Rest/UsersController.php"

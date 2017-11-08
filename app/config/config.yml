@@ -10,7 +10,7 @@ parameters:
 
 framework:
     #esi: ~
-    #translator: { fallbacks: ['%locale%'] }
+    translator: ~ #{ fallbacks: ['%locale%'] }
     secret: '%secret%'
     router:
         resource: '%kernel.project_dir%/app/config/routing.yml'
@@ -32,6 +32,8 @@ framework:
     assets: ~
     php_errors:
         log: true
+    serializer:
+            enabled: true
 
 # Twig Configuration
 twig:
@@ -62,8 +64,60 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: '%mailer_transport%'
-    host: '%mailer_host%'
-    username: '%mailer_user%'
-    password: '%mailer_password%'
-    spool: { type: memory }
+    transport:  "%mailer_transport%"    # On va chercher la config dans parameters.yml
+    host:       "%mailer_host%"         # pour que les données sensibles ne soit pas accessible par autrui
+    username:   "%mailer_user%"
+    password:   "%mailer_password%"
+    spool:      { type: memory }
+    port:       ~         #Par défaut il utilise le port 465
+    auth_mode:  login
+    encryption: ssl
+
+
+#fos_rest:
+#    body_converter:
+#        enabled: true
+#    view:
+#        formats: { json: true, xml: false, rss: false }
+#    serializer:
+#        serialize_null: true
+#
+#sensio_framework_extra:
+#    view: { annotations: true }
+
+fos_rest:
+    param_fetcher_listener: true
+    body_listener: true
+    format_listener: true
+    view:
+        view_response_listener: 'force'
+        formats:
+            json : true
+        templating_formats:
+            html: true
+        force_redirects:
+            html: true
+        failed_validation: HTTP_BAD_REQUEST
+        default_engine: twig
+    routing_loader:
+        default_format: json
+        include_format: false
+
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: AppBundle\Entity\User
+    from_email:
+        address:        contact.campingimerir@gmail.com    #Adresse de l'envoyeur
+        sender_name:    Camping Imerir                      #Nom de l'envoyeur
+    service:
+        mailer: fos_user.mailer.twig_swift                #Pour envoyer le mail en utilise le service swiftmailer
+    registration:
+        confirmation:
+            enabled: true                                 #activé la confirmation par email
+    resetting:
+        email:
+            from_email:
+                address:        contact.campingimerir@gmail.com
+                sender_name:    Camping Imerir
